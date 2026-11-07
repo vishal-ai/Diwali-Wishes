@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Diwali 🪔✨</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000005;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            position: relative;
+            font-family: 'Calibri', sans-serif;
+        }
+
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Initial Start Overlay to enable Audio */
+        #startOverlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 5, 0.92);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        #startOverlay h1 {
+            color: #ffd700;
+            font-family: 'Bradley Hand ITC', 'Bradley Hand', cursive, sans-serif;
+            font-size: 2.8rem;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 15px rgba(255, 165, 0, 0.8);
+        }
+
+        #startOverlay p {
+            color: #ffffff;
+            font-size: 1.2rem;
+            background: linear-gradient(45deg, #ff7b00, #ff0055);
+            padding: 12px 30px;
+            border-radius: 30px;
+            box-shadow: 0 0 20px rgba(255, 123, 0, 0.5);
+            font-weight: bold;
+        }
+
+        /* 14 Diyas Bottom Bar */
+        .diyas-bar {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            z-index: 10;
+            padding: 0 10px;
+        }
+
+        /* Small Diya Item Styling */
+        .diya-item {
+            width: 30px;
+            height: 28px;
+            cursor: pointer;
+            pointer-events: auto;
+            animation: flicker 1.6s ease-in-out infinite alternate;
+            filter: drop-shadow(0 0 6px #ff9900) drop-shadow(0 0 12px #ff4500);
+            transition: transform 0.2s ease;
+        }
+
+        .diya-item:hover {
+            transform: scale(1.25) translateY(-4px);
+        }
+
+        .diyas-bar .diya-item:nth-child(odd) { animation-delay: 0.2s; }
+        .diyas-bar .diya-item:nth-child(even) { animation-delay: 0.7s; }
+
+        @keyframes flicker {
+            0% {
+                transform: translateY(0) scale(1);
+                filter: drop-shadow(0 0 5px #ff9900) drop-shadow(0 0 10px #ff4500);
+            }
+            100% {
+                transform: translateY(-4px) scale(1.08);
+                filter: drop-shadow(0 0 12px #ffb700) drop-shadow(0 0 20px #ff0000);
+            }
+        }
+
+        /* Floating White Happy Diwali Text Animation */
+        .floating-wishes {
+            position: absolute;
+            bottom: 60px;
+            font-family: 'Bradley Hand ITC', 'Bradley Hand', cursive, sans-serif;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffffff;
+            pointer-events: none;
+            z-index: 8;
+            animation: floatUpText 4s linear forwards;
+            filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.8));
+            white-space: nowrap;
+        }
+
+        @keyframes floatUpText {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(-120px) scale(1.05);
+            }
+            80% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-480px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* Center Popup Modal with Golden Vintage Banner Frame */
+        .wish-modal {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            opacity: 0;
+            z-index: 20;
+            width: 90%;
+            max-width: 520px;
+            height: 110px;
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+        }
+
+        .wish-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .wish-modal.fade-out {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+        }
+
+        /* Background Golden SVG Frame */
+        .wish-modal .frame-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            filter: drop-shadow(0 0 15px rgba(255, 183, 0, 0.6));
+        }
+
+        /* Wish Text inside the frame */
+        .wish-modal p {
+            position: relative;
+            z-index: 2;
+            font-family: 'Calibri', 'Segoe UI', sans-serif;
+            font-size: 0.88rem;
+            color: #2b1704;
+            font-weight: bold;
+            text-align: center;
+            white-space: nowrap;
+            padding: 0 50px;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .diya-item {
+                width: 22px;
+                height: 20px;
+            }
+            .diyas-bar {
+                gap: 4px;
+                bottom: 12px;
+            }
+            .floating-wishes {
+                font-size: 1.4rem;
+            }
+            .wish-modal {
+                max-width: 95%;
+                height: 85px;
+            }
+            .wish-modal p {
+                font-size: 0.7rem;
+                padding: 0 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Start Overlay to Bypass Browser Audio Restrictions -->
+    <div id="startOverlay" onclick="startCelebration()">
+        <div>
+            <h1>✨ Happy Diwali ✨</h1>
+            <p>Tap to Open Celebration 🪔</p>
+        </div>
+    </div>
+
+    <!-- Audio Elements (Apne folder me firework.mp3 aur song.mp3 zaroor rakhein) -->
+    <audio id="bgMusic" loop>
+        <source src="song.mp3" type="audio/mp3">
+    </audio>
+
+    <canvas id="fireworksCanvas"></canvas>
+
+    <!-- 14 Interactive Diyas Bar -->
+    <div class="diyas-bar" id="diyasBar">
+        <script>
+            const diyaSVG = `
+            <svg class="diya-item" onclick="showWish(event)" viewBox="0 0 200 180" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="flameGrad" cx="50%" cy="60%" r="50%">
+                        <stop offset="0%" stop-color="#ffffff"/>
+                        <stop offset="30%" stop-color="#ffeb3b"/>
+                        <stop offset="70%" stop-color="#ff9800"/>
+                        <stop offset="100%" stop-color="#f44336"/>
+                    </radialGradient>
+                    <linearGradient id="bowlGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stop-color="#d35400"/>
+                        <stop offset="50%" stop-color="#873600"/>
+                        <stop offset="100%" stop-color="#4a235a"/>
+                    </linearGradient>
+                    <linearGradient id="rimGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stop-color="#f39c12"/>
+                        <stop offset="100%" stop-color="#b9770e"/>
+                    </linearGradient>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+                        <feMerge>
+                            <feMergeNode in="coloredBlur"/>
+                            <feMergeNode in="SourceGraphic"/>
+                        </feMerge>
+                    </filter>
+                </defs>
+                <path d="M100 8 C100 8 122 48 122 75 C122 96 106 112 100 118 C94 112 78 96 78 75 C78 48 100 8 100 8 Z" fill="url(#flameGrad)" filter="url(#glow)"/>
+                <path d="M100 35 C100 35 111 62 111 78 C111 88 104 96 100 100 C96 96 89 88 89 78 C89 62 100 35 100 35 Z" fill="#ffffff" opacity="0.85"/>
+                <path d="M100 102 Q98 118 100 128" stroke="#220000" stroke-width="3.5" fill="none"/>
+                <path d="M22 118 Q100 162 178 118 Q158 172 100 172 Q42 172 22 118 Z" fill="url(#bowlGrad)" stroke="#ffbe3b" stroke-width="3"/>
+                <ellipse cx="100" cy="118" rx="78" ry="19" fill="url(#rimGrad)" stroke="#ffd700" stroke-width="2.5"/>
+                <circle cx="100" cy="142" r="10" fill="#f39c12" stroke="#fff" stroke-width="1.5"/>
+            </svg>`;
+            
+            let bar = document.currentScript.parentElement;
+            for(let i=0; i<14; i++) {
+                bar.innerHTML += diyaSVG;
+            }
+        </script>
+    </div>
+
+    <!-- Center Wish Popup Modal with Golden Vintage Banner Frame -->
+    <div class="wish-modal" id="wishModal">
+        <svg class="frame-svg" viewBox="0 0 600 120" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="goldBannerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#b8860b"/>
+                    <stop offset="25%" stop-color="#ffd700"/>
+                    <stop offset="50%" stop-color="#fff8dc"/>
+                    <stop offset="75%" stop-color="#ffd700"/>
+                    <stop offset="100%" stop-color="#b8860b"/>
+                </linearGradient>
+            </defs>
+            <g stroke="#000" stroke-width="2.5" fill="none">
+                <path d="M 60 60 C 40 20, 10 30, 25 60 C 10 90, 40 100, 60 60 Z" />
+                <path d="M 45 60 C 35 40, 20 45, 30 60 C 20 75, 35 80, 45 60 Z" />
+                <circle cx="20" cy="60" r="4" fill="#000"/>
+                <path d="M 70 30 C 50 10, 20 15, 40 40" />
+                <path d="M 70 90 C 50 110, 20 105, 40 80" />
+            </g>
+            <g stroke="#000" stroke-width="2.5" fill="none">
+                <path d="M 540 60 C 560 20, 590 30, 575 60 C 590 90, 560 100, 540 60 Z" />
+                <path d="M 555 60 C 565 40, 580 45, 570 60 C 580 75, 565 80, 555 60 Z" />
+                <circle cx="580" cy="60" r="4" fill="#000"/>
+                <path d="M 530 30 C 550 10, 580 15, 560 40" />
+                <path d="M 530 90 C 550 110, 580 105, 560 80" />
+            </g>
+            <rect x="75" y="25" width="450" height="70" rx="8" fill="url(#goldBannerGrad)" stroke="#000" stroke-width="3.5"/>
+            <rect x="80" y="30" width="440" height="60" rx="5" fill="none" stroke="#2b1704" stroke-width="1.5" stroke-dasharray="4,2"/>
+        </svg>
+        <p>Wishing you a bright Diwali and a sparkling year ahead.</p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('fireworksCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Play firework sound from local file (firework.mp3)
+       function playFireworkSound() {
+    const sound = new Audio('firework.mp3');
+    sound.volume = 0.1;
+    sound.play().catch(err => console.log(err));
+}
+
+       function startCelebration() {
+    const overlay = document.getElementById('startOverlay');
+    overlay.style.opacity = '0';
+    setTimeout(() => {
+        overlay.style.display = 'none';
+    }, 500);
+
+    // Patakhe ka sound play karein
+    playFireworkSound();
+
+    // Background song ko bina kisi delay ke TURANT play karein taaki browser block na kare
+    const bgMusic = document.getElementById('bgMusic');
+    bgMusic.volume = 0.9; // Volume 50% rakhi hai taaki saaf suthra baje
+    bgMusic.play().catch(err => {
+        console.log("Background Music Error: ", err);
+    });
+}
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 7 + 1.5;
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                this.alpha = 1;
+                this.decay = Math.random() * 0.012 + 0.008;
+                this.size = Math.random() * 3 + 1;
+                this.friction = 0.96;
+                this.gravity = 0.12;
+            }
+
+            update() {
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.max(this.alpha, 0);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        class Firework {
+            constructor(startX, targetY) {
+                this.x = startX || Math.random() * (canvas.width * 0.8) + (canvas.width * 0.1);
+                this.y = canvas.height;
+                this.targetY = targetY || Math.random() * (canvas.height * 0.5) + 50;
+                this.speed = Math.random() * 3 + 8;
+                this.angle = -Math.PI / 2 + (Math.random() * 0.3 - 0.15);
+                this.vx = Math.cos(this.angle) * this.speed;
+                this.vy = Math.sin(this.angle) * this.speed;
+                this.exploded = false;
+                this.particles = [];
+                this.color = `hsl(${Math.random() * 360}, 100%, 60%)`;
+            }
+
+            update() {
+                if (!this.exploded) {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.vy += 0.05;
+                    if (this.y <= this.targetY || this.vy >= 0) {
+                        this.exploded = true;
+                        playFireworkSound(); // Exact firework audio plays here
+                        let particleCount = Math.floor(Math.random() * 40) + 80;
+                        for (let i = 0; i < particleCount; i++) {
+                            this.particles.push(new Particle(this.x, this.y, this.color));
+                        }
+                    }
+                } else {
+                    this.particles.forEach(p => p.update());
+                    this.particles = this.particles.filter(p => p.alpha > 0);
+                }
+            }
+
+            draw() {
+                if (!this.exploded) {
+                    ctx.save();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(this.x, this.y, 2, 8);
+                    ctx.restore();
+                } else {
+                    this.particles.forEach(p => p.draw());
+                }
+            }
+        }
+
+        let fireworks = [];
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 5, 0.2)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (Math.random() < 0.04) {
+                fireworks.push(new Firework());
+            }
+
+            fireworks.forEach((fw, index) => {
+                fw.update();
+                fw.draw();
+                if (fw.exploded && fw.particles.length === 0) {
+                    fireworks.splice(index, 1);
+                }
+            });
+
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+
+        function spawnFloatingWishes(customX) {
+            const textElem = document.createElement('div');
+            textElem.className = 'floating-wishes';
+            textElem.innerText = '✨ Happy Diwali ✨';
+            
+            const randomX = customX || (Math.random() * (window.innerWidth - 250) + 30);
+            textElem.style.left = randomX + 'px';
+
+            document.body.appendChild(textElem);
+
+            setTimeout(() => {
+                textElem.remove();
+            }, 4000);
+        }
+
+        setInterval(() => {
+            spawnFloatingWishes();
+        }, 2500);
+
+        window.addEventListener('click', (e) => {
+            if (e.target.closest('.diya-item') || e.target.closest('.wish-modal') || e.target.closest('#startOverlay')) return;
+
+            let fw = new Firework(e.clientX, e.clientY);
+            fw.x = e.clientX;
+            fw.y = canvas.height;
+            fw.targetY = e.clientY;
+            fw.vx = 0;
+            fw.vy = -11;
+            fireworks.push(fw);
+            playFireworkSound();
+
+            spawnFloatingWishes(e.clientX - 60);
+        });
+
+        let modalTimeout, fadeTimeout;
+        function showWish(e) {
+            e.stopPropagation();
+            const modal = document.getElementById('wishModal');
+            
+            clearTimeout(modalTimeout);
+            clearTimeout(fadeTimeout);
+
+            modal.classList.remove('fade-out');
+            modal.classList.add('active');
+
+            modalTimeout = setTimeout(() => {
+                modal.classList.add('fade-out');
+                fadeTimeout = setTimeout(() => {
+                    modal.classList.remove('active');
+                    modal.classList.remove('fade-out');
+                }, 300);
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
