@@ -323,7 +323,7 @@
         // Play firework sound from local file (firework.mp3)
        function playFireworkSound() {
     const sound = new Audio('firework.mp3');
-    sound.volume = 0.1;
+    sound.volume = 0.04;
     sound.play().catch(err => console.log(err));
 }
 
@@ -339,7 +339,7 @@
 
     // Background song ko bina kisi delay ke TURANT play karein taaki browser block na kare
     const bgMusic = document.getElementById('bgMusic');
-    bgMusic.volume = 0.9; // Volume 50% rakhi hai taaki saaf suthra baje
+    bgMusic.volume = 1.0; // Volume 50% rakhi hai taaki saaf suthra baje
     bgMusic.play().catch(err => {
         console.log("Background Music Error: ", err);
     });
